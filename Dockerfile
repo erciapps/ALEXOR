@@ -18,3 +18,4 @@ RUN curl -L https://github.com/axelor/axelor-open-suite/releases/download/v8.4.6
 EXPOSE 8084
 CMD ["catalina.sh", "run"]
 
+
