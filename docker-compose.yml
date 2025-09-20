@@ -19,7 +19,7 @@ services:
     depends_on:
       - db
     ports:
-      - "8084:8080"
+      - "8084:8080"   # localhost:8084 -> contenedor:8080
     environment:
       DB_HOST: db
       DB_PORT: 5432
@@ -29,4 +29,5 @@ services:
 
 volumes:
   db_data:
+
 
