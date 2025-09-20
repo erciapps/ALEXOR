@@ -1,8 +1,8 @@
-version: "3.8"
+version: '3.8'
 
 services:
   db:
-    image: postgres:15
+    image: postgres:13
     container_name: axelor-db
     environment:
       POSTGRES_DB: axelor
@@ -10,22 +10,23 @@ services:
       POSTGRES_PASSWORD: axelor
     volumes:
       - db_data:/var/lib/postgresql/data
-    restart: unless-stopped
+    ports:
+      - "5432:5432"
 
   axelor:
     build: .
     container_name: axelor-app
-    depends_on:
-      - db
     environment:
       DB_HOST: db
       DB_PORT: 5432
       DB_NAME: axelor
       DB_USER: axelor
       DB_PASS: axelor
+    depends_on:
+      - db
     ports:
       - "8084:8080"
-    restart: unless-stopped
 
 volumes:
   db_data:
+
