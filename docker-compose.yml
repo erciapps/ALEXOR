@@ -21,10 +21,7 @@ services:
     ports:
       - "8084:8080"
     volumes:
-      # montamos la config externa
       - ./application.properties:/opt/tomcat/conf/application.properties
 
 volumes:
   db_data:
-
-
