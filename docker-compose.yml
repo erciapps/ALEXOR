@@ -19,13 +19,10 @@ services:
     depends_on:
       - db
     ports:
-      - "8084:8080"   # localhost:8084 -> contenedor:8080
-    environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: axelor
-      DB_USER: axelor
-      DB_PASS: axelor
+      - "8084:8080"
+    volumes:
+      # montamos la config externa
+      - ./application.properties:/opt/tomcat/conf/application.properties
 
 volumes:
   db_data:
