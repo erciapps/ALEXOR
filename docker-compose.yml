@@ -12,11 +12,13 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    networks:
+      - axelor-net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U axelor -d axelor"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 5
 
   axelor:
     build: .
@@ -26,9 +28,17 @@ services:
         condition: service_healthy
     ports:
       - "8084:8080"
+    volumes:
+      - ./application.properties:/opt/tomcat/conf/application.properties
+    networks:
+      - axelor-net
 
 volumes:
   db_data:
+
+networks:
+  axelor-net:
+    driver: bridge
 
 
 
