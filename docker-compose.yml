@@ -1,10 +1,15 @@
-version: "3.9"
+version: "3.8"
 
 networks:
   axelor-net:
+    name: axelor-net
+    driver: bridge
+
+volumes:
+  axelor-db-data:
 
 services:
-  db:
+  axelor-db:
     image: postgres:15
     container_name: axelor-db
     environment:
@@ -15,20 +20,25 @@ services:
       - "5432:5432"
     networks:
       - axelor-net
+    volumes:
+      - axelor-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U axelor -d axelor"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
 
-  axelor:
+  axelor-app:
     build: .
     container_name: axelor-app
-    environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: axelor
-      DB_USER: axelor
-      DB_PASS: axelor
     depends_on:
-      - db
+      - axelor-db
+    environment:
+      DB_HOST: axelor-db
+      DB_PORT: 5432
     ports:
-      - "8084:8080"   # afuera = 8084, dentro del contenedor = 8080
+      - "8084:8080"   # Accede por http://localhost:8084
     networks:
       - axelor-net
 
