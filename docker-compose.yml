@@ -22,13 +22,14 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 5432
+      DB_NAME: axelor
+      DB_USER: axelor
+      DB_PASS: axelor
     depends_on:
       - db
     ports:
-      - "8084:8080"
+      - "8084:8080"   # afuera = 8084, dentro del contenedor = 8080
     networks:
       - axelor-net
-
-
 
 
