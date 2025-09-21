@@ -20,6 +20,12 @@ services:
       - db
     ports:
       - "8084:8080"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: axelor
+      DB_USER: axelor
+      DB_PASS: axelor
 
 volumes:
   db_data:
