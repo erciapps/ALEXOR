@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  db:
+  axelor-db:
     image: postgres:15
     container_name: axelor-db
     environment:
@@ -20,11 +20,11 @@ services:
       timeout: 5s
       retries: 5
 
-  axelor:
+  axelor-app:
     build: .
     container_name: axelor-app
     depends_on:
-      db:
+      axelor-db:
         condition: service_healthy
     ports:
       - "8084:8080"
