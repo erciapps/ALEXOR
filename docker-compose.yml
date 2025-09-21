@@ -8,6 +8,11 @@ services:
       POSTGRES_DB: axelor
       POSTGRES_USER: axelor
       POSTGRES_PASSWORD: axelor
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U axelor -d axelor"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     ports:
       - "5432:5432"
     volumes:
@@ -17,15 +22,11 @@ services:
     build: .
     container_name: axelor-app
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "8084:8080"
-    environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: axelor
-      DB_USER: axelor
-      DB_PASS: axelor
 
 volumes:
   db_data:
+
