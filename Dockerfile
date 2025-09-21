@@ -5,8 +5,8 @@ ENV PATH=$CATALINA_HOME/bin:$PATH
 
 WORKDIR /tmp
 
-# Instalar curl y netcat (para healthcheck si lo necesitas)
-RUN apt-get update && apt-get install -y curl netcat \
+# Instalar dependencias necesarias
+RUN apt-get update && apt-get install -y curl netcat-openbsd procps \
     && rm -rf /var/lib/apt/lists/*
 
 # Instalar Tomcat
@@ -28,6 +28,7 @@ COPY application.properties $CATALINA_HOME/conf/application.properties
 
 EXPOSE 8080
 CMD ["catalina.sh", "run"]
+
 
 
 
