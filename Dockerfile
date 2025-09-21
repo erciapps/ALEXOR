@@ -3,7 +3,7 @@ FROM eclipse-temurin:17-jdk
 ENV CATALINA_HOME=/opt/tomcat
 ENV PATH=${CATALINA_HOME}/bin:$PATH
 
-# Paquetes
+# Paquetes base
 RUN apt-get update \
  && apt-get install -y --no-install-recommends ca-certificates curl wget netcat-openbsd procps \
  && update-ca-certificates \
@@ -18,19 +18,25 @@ RUN curl -fsSL https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.89/bin/apach
  && rm -f tomcat.tar.gz \
  && rm -rf ${CATALINA_HOME}/webapps/*
 
-# ↓↓↓ Descarga robusta del WAR (sin COPY opcional) ↓↓↓
+# Descargar WAR Axelor (intentos robustos)
 ARG AOS_URL="https://github.com/axelor/axelor-open-suite/releases/download/v8.4.6/axelor-erp-v8.4.6.war"
 RUN (wget -O /tmp/axelor.war --https-only --no-verbose --tries=5 --timeout=30 "$AOS_URL" \
   || curl -fsSL --location --retry 5 --retry-all-errors --connect-timeout 20 -o /tmp/axelor.war "$AOS_URL" \
-  || (echo "⚠️ curl estricto falló; probando con -k" && curl -k -L --retry 3 -o /tmp/axelor.war "$AOS_URL")) \
+  || (echo "curl estricto falló; probando -k" && curl -k -L --retry 3 -o /tmp/axelor.war "$AOS_URL")) \
  && test -s /tmp/axelor.war \
  && mv /tmp/axelor.war ${CATALINA_HOME}/webapps/ROOT.war
 
-# application.properties dentro del classpath del WAR desplegado
-RUN mkdir -p ${CATALINA_HOME}/webapps/ROOT/WEB-INF/classes
-COPY application.properties ${CATALINA_HOME}/webapps/ROOT/WEB-INF/classes/application.properties
+# ---- CONFIG Axelor en CLASSPATH GLOBAL ----
+# (No metas application.properties dentro del WAR)
+RUN mkdir -p ${CATALINA_HOME}/lib/classes
+COPY application.properties ${CATALINA_HOME}/lib/classes/application.properties
 
-# Espera a DB y arranca
+# Obligar a Spring/Axelor a leer esa ruta
+ENV CATALINA_OPTS="$CATALINA_OPTS \
+ -Daxelor.config=${CATALINA_HOME}/lib/classes/application.properties \
+ -Dspring.config.additional-location=${CATALINA_HOME}/lib/classes/"
+
+# Script de espera a DB y arranque
 COPY wait-for-db.sh /usr/local/bin/wait-for-db.sh
 RUN chmod +x /usr/local/bin/wait-for-db.sh
 
