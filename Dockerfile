@@ -23,12 +23,12 @@ RUN rm -rf $CATALINA_HOME/webapps/*
 RUN curl -L https://github.com/axelor/axelor-open-suite/releases/download/v8.4.6/axelor-erp-v8.4.6.war \
     -o $CATALINA_HOME/webapps/ROOT.war
 
-# Copiar configuración personalizada
-COPY application.properties $CATALINA_HOME/conf/application.properties
+# Crear carpeta de configuración en el classpath y copiar el properties
+RUN mkdir -p $CATALINA_HOME/webapps/ROOT/WEB-INF/classes/
+COPY application.properties $CATALINA_HOME/webapps/ROOT/WEB-INF/classes/application.properties
 
 EXPOSE 8080
 CMD ["catalina.sh", "run"]
-
 
 
 
