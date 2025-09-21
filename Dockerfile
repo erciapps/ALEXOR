@@ -5,6 +5,9 @@ ENV PATH=$CATALINA_HOME/bin:$PATH
 
 WORKDIR /tmp
 
+# Instalar curl y netcat para pruebas
+RUN apt-get update && apt-get install -y curl netcat && rm -rf /var/lib/apt/lists/*
+
 # Instalar Tomcat
 RUN curl -O https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.89/bin/apache-tomcat-9.0.89.tar.gz \
     && mkdir -p /opt \
@@ -19,14 +22,13 @@ RUN rm -rf $CATALINA_HOME/webapps/*
 RUN curl -L https://github.com/axelor/axelor-open-suite/releases/download/v8.4.6/axelor-erp-v8.4.6.war \
     -o $CATALINA_HOME/webapps/ROOT.war
 
-# Copiar configuración
-COPY application.properties $CATALINA_HOME/webapps/ROOT/WEB-INF/classes/application.properties
-
-# Copiar wait-for-it
-COPY wait-for-it.sh /usr/local/bin/wait-for-it
-RUN chmod +x /usr/local/bin/wait-for-it
+# Copiar configuración personalizada
+COPY application.properties $CATALINA_HOME/conf/application.properties
 
 EXPOSE 8080
-CMD ["wait-for-it", "db:5432", "--", "catalina.sh", "run"]
+
+# Espera a la DB antes de lanzar Tomcat
+CMD bash -c "until nc -z db 5432; do echo 'Esperando a la DB...'; sleep 5; done; catalina.sh run"
+
 
 
