@@ -5,9 +5,8 @@ ENV PATH=$CATALINA_HOME/bin:$PATH
 
 WORKDIR /tmp
 
-# Instalar utilidades necesarias
-RUN apt-get update \
-    && apt-get install -y curl netcat-openbsd \
+# Instalar curl y netcat (para healthcheck si lo necesitas)
+RUN apt-get update && apt-get install -y curl netcat \
     && rm -rf /var/lib/apt/lists/*
 
 # Instalar Tomcat
@@ -28,9 +27,7 @@ RUN curl -L https://github.com/axelor/axelor-open-suite/releases/download/v8.4.6
 COPY application.properties $CATALINA_HOME/conf/application.properties
 
 EXPOSE 8080
-
-# Espera a la DB antes de lanzar Tomcat
-CMD bash -c "until nc -z db 5432; do echo 'Esperando a la DB...'; sleep 5; done; catalina.sh run"
+CMD ["catalina.sh", "run"]
 
 
 
