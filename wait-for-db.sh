@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
 set -e
+HOST="${DB_HOST:-db}"
+PORT="${DB_PORT:-5432}"
 
-DB_HOST="${DB_HOST:-axelor-db}"
-DB_PORT="${DB_PORT:-5432}"
-
-echo "⏳ Esperando a que PostgreSQL esté listo en ${DB_HOST}:${DB_PORT}..."
-for i in $(seq 1 60); do
-  if nc -z "${DB_HOST}" "${DB_PORT}" >/dev/null 2>&1; then
-    echo "✅ PostgreSQL está disponible, arrancando Tomcat..."
+echo "⏳ Esperando a PostgreSQL en ${HOST}:${PORT}..."
+for i in {1..60}; do
+  if nc -z "${HOST}" "${PORT}" >/dev/null 2>&1; then
+    echo "✅ PostgreSQL disponible."
     exit 0
   fi
   sleep 2
 done
-
-echo "❌ Timeout esperando a PostgreSQL (${DB_HOST}:${DB_PORT})"
+echo "❌ Timeout esperando PostgreSQL en ${HOST}:${PORT}"
 exit 1
