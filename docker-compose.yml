@@ -1,7 +1,10 @@
-version: '3.8'
+version: "3.9"
+
+networks:
+  axelor-net:
 
 services:
-  axelor-db:
+  db:
     image: postgres:15
     container_name: axelor-db
     environment:
@@ -10,35 +13,22 @@ services:
       POSTGRES_PASSWORD: axelor
     ports:
       - "5432:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data
     networks:
       - axelor-net
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U axelor -d axelor"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
-  axelor-app:
+  axelor:
     build: .
     container_name: axelor-app
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
     depends_on:
-      axelor-db:
-        condition: service_healthy
+      - db
     ports:
-      - "8084:8080"
-    volumes:
-      - ./application.properties:/opt/tomcat/conf/application.properties
+      - "8080:8080"
     networks:
       - axelor-net
 
-volumes:
-  db_data:
-
-networks:
-  axelor-net:
-    driver: bridge
 
 
 
