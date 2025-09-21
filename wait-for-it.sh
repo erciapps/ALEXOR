@@ -3,7 +3,7 @@
 
 set -e
 
-TIMEOUT=15
+TIMEOUT=60
 QUIET=0
 
 echoerr() { if [ $QUIET -ne 1 ]; then echo "$@" 1>&2; fi }
