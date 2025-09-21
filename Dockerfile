@@ -5,8 +5,10 @@ ENV PATH=$CATALINA_HOME/bin:$PATH
 
 WORKDIR /tmp
 
-# Instalar curl y netcat para pruebas
-RUN apt-get update && apt-get install -y curl netcat && rm -rf /var/lib/apt/lists/*
+# Instalar utilidades necesarias
+RUN apt-get update \
+    && apt-get install -y curl netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/*
 
 # Instalar Tomcat
 RUN curl -O https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.89/bin/apache-tomcat-9.0.89.tar.gz \
